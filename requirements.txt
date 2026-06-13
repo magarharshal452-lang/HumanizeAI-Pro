@@ -1,7 +1,8 @@
 streamlit
-openai
+transformers
+torch
+accelerate
 sentence-transformers
 textstat
 nltk
 scikit-learn
-python-dotenv
