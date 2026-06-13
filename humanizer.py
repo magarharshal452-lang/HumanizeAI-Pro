@@ -1,9 +1,9 @@
-from transformers import pipeline
+from openai import OpenAI
 from prompts import PROMPTS
+import os
 
-generator = pipeline(
-    "text2text-generation",
-    model="google/flan-t5-large"
+client = OpenAI(
+    api_key=os.getenv("OPENAI_API_KEY")
 )
 
 def humanize(text, mode):
@@ -12,11 +12,33 @@ def humanize(text, mode):
         text=text
     )
 
-    result = generator(
-        prompt,
-        max_length=512,
-        do_sample=True,
-        temperature=0.8
+    response = client.chat.completions.create(
+        model="gpt-4.1-mini",
+        messages=[
+            {
+                "role":"system",
+                "content":"""
+You are an expert AI Humanizer.
+
+Rewrite text naturally.
+
+Preserve all information.
+
+Never add facts.
+
+Never remove facts.
+
+Improve readability.
+
+Sound like a real human wrote it.
+"""
+            },
+            {
+                "role":"user",
+                "content":prompt
+            }
+        ],
+        temperature=0.7
     )
 
-    return result[0]["generated_text"]
+    return response.choices[0].message.content
